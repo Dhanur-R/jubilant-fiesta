@@ -84,6 +84,7 @@ async fn main() -> anyhow::Result<()> {
         )
         .route("/:code", get(routes::redirect))
         .route("/health", get(routes::health))
+        .nest_service("/static", tower_http::services::ServeDir::new("static"))
         .with_state(state)
         .layer(tower_http::trace::TraceLayer::new_for_http())
         .layer(axum_middleware::from_fn(middleware::security_headers));

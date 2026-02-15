@@ -89,7 +89,7 @@ pub async fn security_headers(req: Request, next: Next) -> Response<Body> {
     headers.insert("X-XSS-Protection", "1; mode=block".parse().unwrap());
     headers.insert(
         "Content-Security-Policy",
-        "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://dhanur.me; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://dhanur.me; connect-src 'self'; frame-ancestors 'none';"
+        "default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://dhanur.me; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://dhanur.me; connect-src 'self'; frame-ancestors 'none';"
             .parse()
             .unwrap(),
     );

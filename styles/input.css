@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+code,
+.mono,
+input[type="url"] {
+  font-family: "JetBrains Mono", monospace;
+}
+
+/* HTMX Loading States */
+.htmx-request .htmx-indicator {
+  display: inline-flex;
+}
+
+.htmx-request button:not(.htmx-indicator) {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.htmx-indicator {
+  display: none;
+}
+
+@keyframes pulse-border {
+  0%,
+  100% {
+    border-color: #10b981;
+  }
+  50% {
+    border-color: #34d399;
+  }
+}
+
+.htmx-request input {
+  animation: pulse-border 1.5s ease-in-out infinite;
+}
+
+button:active {
+  transform: scale(0.98);
+}

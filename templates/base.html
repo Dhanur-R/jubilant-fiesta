@@ -4,7 +4,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Linkr</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+    <link rel="stylesheet" href="/static/styles.css">
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
     <script
       src="https://dhanur.me/motherland.js"
@@ -15,51 +18,6 @@
       data-gap="1rem"
       data-animate="true"
     ></script>
-    <style>
-      /* Fonts */
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
-
-      :root {
-        color-scheme: dark;
-      }
-
-      body {
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      }
-
-      code, .mono, input[type="url"] {
-        font-family: 'JetBrains Mono', monospace;
-      }
-
-      /* HTMX Loading States */
-      .htmx-request .htmx-indicator {
-        display: inline-flex;
-      }
-
-      .htmx-request button:not(.htmx-indicator) {
-        opacity: 0.6;
-        cursor: wait;
-      }
-
-      .htmx-indicator {
-        display: none;
-      }
-
-      /* Pulse animation for loading input */
-      @keyframes pulse-border {
-        0%, 100% { border-color: #10B981; }
-        50% { border-color: #34D399; }
-      }
-
-      .htmx-request input {
-        animation: pulse-border 1.5s ease-in-out infinite;
-      }
-
-      /* Button press animation */
-      button:active {
-        transform: scale(0.98);
-      }
-    </style>
   </head>
   <body class="bg-black text-white">
     {% block content %}{% endblock %}
