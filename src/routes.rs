@@ -45,7 +45,7 @@ pub async fn shorten(
     headers: HeaderMap,
     Form(payload): Form<ShortenForm>,
 ) -> impl IntoResponse {
-    let original_url = payload.original_url.trim().to_string();
+    let original_url = validation::normalize_url(&payload.original_url);
 
     if let Err(error_msg) = validation::validate_url(&original_url) {
         let template = FormPartialTemplate {

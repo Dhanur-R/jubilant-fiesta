@@ -3,6 +3,53 @@ use url::Url;
 
 use crate::config::Config;
 
+/// Normalizes a URL to a canonical form for consistent storage and deduplication.
+///
+/// - Auto-prepends `https://` if no scheme is provided
+/// - Lowercases scheme and host
+/// - Removes default ports (80 for http, 443 for https)
+/// - Removes fragments (#section)
+/// - Strips trailing slash on root path (no query)
+pub fn normalize_url(input: &str) -> String {
+    let trimmed = input.trim();
+    if trimmed.is_empty() {
+        return String::new();
+    }
+
+    // Auto-prepend https:// if no scheme
+    let url_str = if !trimmed.contains("://") {
+        format!("https://{}", trimmed)
+    } else {
+        trimmed.to_string()
+    };
+
+    // Parse and reconstruct for canonical form
+    let Ok(mut parsed) = Url::parse(&url_str) else {
+        return url_str;
+    };
+
+    // Remove default ports
+    if matches!(
+        (parsed.scheme(), parsed.port()),
+        ("http", Some(80)) | ("https", Some(443))
+    ) {
+        let _ = parsed.set_port(None);
+    }
+
+    // Remove fragment
+    parsed.set_fragment(None);
+
+    let mut result = parsed.to_string();
+
+    // Strip trailing slash for root path with no query
+    // (Url::parse always adds "/" to root, making example.com/ and example.com equivalent)
+    if parsed.path() == "/" && parsed.query().is_none() {
+        result.truncate(result.len() - 1);
+    }
+
+    result
+}
+
 /// Validates a URL for shortening
 ///
 /// Checks:
@@ -186,5 +233,56 @@ mod tests {
     fn test_invalid_protocol() {
         assert!(validate_url("ftp://example.com").is_err());
         assert!(validate_url("example.com").is_err());
+    }
+
+    // --- normalize_url tests ---
+
+    #[test]
+    fn test_normalize_adds_scheme() {
+        assert_eq!(normalize_url("example.com"), "https://example.com");
+        assert_eq!(normalize_url("example.com/path"), "https://example.com/path");
+    }
+
+    #[test]
+    fn test_normalize_trailing_slash() {
+        // Root trailing slash stripped
+        assert_eq!(normalize_url("https://example.com/"), "https://example.com");
+        // Non-root trailing slash preserved (semantically different)
+        assert_eq!(normalize_url("https://example.com/path/"), "https://example.com/path/");
+    }
+
+    #[test]
+    fn test_normalize_default_ports() {
+        assert_eq!(normalize_url("https://example.com:443/path"), "https://example.com/path");
+        assert_eq!(normalize_url("http://example.com:80/path"), "http://example.com/path");
+        // Non-default port preserved
+        assert_eq!(normalize_url("https://example.com:8080/path"), "https://example.com:8080/path");
+    }
+
+    #[test]
+    fn test_normalize_fragment_removed() {
+        assert_eq!(normalize_url("https://example.com/page#section"), "https://example.com/page");
+    }
+
+    #[test]
+    fn test_normalize_lowercases_host() {
+        assert_eq!(normalize_url("https://EXAMPLE.COM/Path"), "https://example.com/Path");
+    }
+
+    #[test]
+    fn test_normalize_preserves_query() {
+        assert_eq!(normalize_url("https://example.com/path?q=1&b=2"), "https://example.com/path?q=1&b=2");
+    }
+
+    #[test]
+    fn test_normalize_dedup_equivalents() {
+        // All of these should normalize to the same canonical URL
+        let canonical = normalize_url("https://example.com");
+        assert_eq!(normalize_url("https://example.com/"), canonical);
+        assert_eq!(normalize_url("https://EXAMPLE.COM"), canonical);
+        assert_eq!(normalize_url("https://example.com:443"), canonical);
+        assert_eq!(normalize_url("example.com"), canonical);
+        assert_eq!(normalize_url("  example.com  "), canonical);
+        assert_eq!(normalize_url("https://example.com#about"), canonical);
     }
 }
