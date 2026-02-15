@@ -9,7 +9,7 @@ A minimal, secure, and intelligent URL shortener built with Rust and Supabase.
 - Security hardened (rate limiting, SSRF protection, CSP headers)
 - Smart deduplication (reuses existing short codes for same URLs)
 - Auto-cleanup (removes links not accessed in 1 year)
-- Supabase REST API (free forever, no database expiry)
+- Supabase REST API (free forever, no database expiry) yay
 - Production-ready (optimized for free tier)
 
 ## Quick Setup
@@ -29,7 +29,6 @@ CREATE TABLE IF NOT EXISTS links (
 );
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS idx_links_short_code ON links(short_code);
 CREATE INDEX IF NOT EXISTS idx_links_original_url ON links(original_url);
 CREATE INDEX IF NOT EXISTS idx_links_last_accessed ON links(last_accessed);
 CREATE INDEX IF NOT EXISTS idx_links_created_at ON links(created_at);
@@ -43,7 +42,7 @@ Update `.env` with your credentials:
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_KEY=your-service-role-key-here
 PUBLIC_BASE_URL=https://linkr.dhanur.me
-PORT=3000
+PORT=8080
 RUST_LOG=linkr=info,tower_http=info
 ```
 
@@ -55,7 +54,7 @@ Get your `service_role` key from: Supabase Dashboard → Settings → API
 cargo run
 ```
 
-Visit: http://localhost:3000
+Visit: http://localhost:8080
 
 ### 4. Deploy to Render
 
