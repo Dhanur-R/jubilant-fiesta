@@ -16,7 +16,7 @@ body {
 
 code,
 .mono,
-input[type="url"] {
+input[name="original_url"] {
   font-family: "JetBrains Mono", monospace;
 }
 
