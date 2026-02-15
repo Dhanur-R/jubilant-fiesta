@@ -1,0 +1,13 @@
+target/
+.git/
+.env
+.env.local
+*.db
+*.db-shm
+*.db-wal
+README.md
+build.sh
+build.bat
+nul
+.vscode/
+.idea/

@@ -1,0 +1,19 @@
+{% extends "base.html" %} {% block content %}
+<div class="min-h-screen flex items-center justify-center px-6 py-16">
+  <div
+    class="w-full max-w-2xl border-2 border-neutral-800 bg-neutral-950 p-12 shadow-2xl shadow-black"
+  >
+    <div class="flex items-center justify-between">
+      <h1 class="text-4xl font-bold tracking-tighter">Linkr</h1>
+      <span
+        class="border border-neutral-800 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.25em] text-neutral-600"
+        >Balsam</span
+      >
+    </div>
+    <p class="mt-4 text-base font-medium text-neutral-400">
+      Short, fast, and elegant. Paste a URL and hit enter.
+    </p>
+    {% include "partials/form.html" %}
+  </div>
+</div>
+{% endblock %}

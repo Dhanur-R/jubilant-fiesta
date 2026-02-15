@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Linkr</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script
+      src="https://dhanur.me/motherland.js"
+      data-mode="long"
+      data-theme="dark"
+      data-position="top-left"
+      data-size="40px"
+      data-gap="1rem"
+      data-animate="true"
+    ></script>
+    <style>
+      /* Fonts */
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+      :root {
+        color-scheme: dark;
+      }
+
+      body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+
+      code, .mono, input[type="url"] {
+        font-family: 'JetBrains Mono', monospace;
+      }
+
+      /* HTMX Loading States */
+      .htmx-request .htmx-indicator {
+        display: inline-flex;
+      }
+
+      .htmx-request button:not(.htmx-indicator) {
+        opacity: 0.6;
+        cursor: wait;
+      }
+
+      .htmx-indicator {
+        display: none;
+      }
+
+      /* Pulse animation for loading input */
+      @keyframes pulse-border {
+        0%, 100% { border-color: #10B981; }
+        50% { border-color: #34D399; }
+      }
+
+      .htmx-request input {
+        animation: pulse-border 1.5s ease-in-out infinite;
+      }
+
+      /* Button press animation */
+      button:active {
+        transform: scale(0.98);
+      }
+    </style>
+  </head>
+  <body class="bg-black text-white">
+    {% block content %}{% endblock %}
+    <script>
+      async function copyShortUrl(button) {
+        const text = button.getAttribute("data-copy");
+        if (!text) return;
+
+        const originalText = button.textContent;
+
+        try {
+          await navigator.clipboard.writeText(text);
+          button.textContent = "✓ COPIED";
+          button.classList.remove("border-green-500", "text-green-500");
+          button.classList.add("border-green-400", "bg-green-400", "text-black");
+
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("border-green-400", "bg-green-400", "text-black");
+            button.classList.add("border-green-500", "text-green-500");
+          }, 2000);
+        } catch (err) {
+          button.textContent = "✗ FAILED";
+          button.classList.remove("border-green-500", "text-green-500");
+          button.classList.add("border-red-500", "text-red-500");
+
+          setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove("border-red-500", "text-red-500");
+            button.classList.add("border-green-500", "text-green-500");
+          }, 2000);
+        }
+      }
+    </script>
+  </body>
+</html>
