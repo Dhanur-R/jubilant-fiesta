@@ -9,6 +9,7 @@ use crate::config::Config;
 /// - Lowercases scheme and host
 /// - Removes default ports (80 for http, 443 for https)
 /// - Removes fragments (#section)
+/// - Strips `www.` prefix
 /// - Strips trailing slash on root path (no query)
 pub fn normalize_url(input: &str) -> String {
     let trimmed = input.trim();
@@ -38,6 +39,16 @@ pub fn normalize_url(input: &str) -> String {
 
     // Remove fragment
     parsed.set_fragment(None);
+
+    // Strip www. prefix (www.example.com → example.com)
+    // Only when the remainder still has a dot (protects against www.com edge case)
+    if let Some(host) = parsed.host_str().map(String::from) {
+        if let Some(stripped) = host.strip_prefix("www.") {
+            if stripped.contains('.') {
+                let _ = parsed.set_host(Some(stripped));
+            }
+        }
+    }
 
     let mut result = parsed.to_string();
 
@@ -284,5 +295,16 @@ mod tests {
         assert_eq!(normalize_url("example.com"), canonical);
         assert_eq!(normalize_url("  example.com  "), canonical);
         assert_eq!(normalize_url("https://example.com#about"), canonical);
+        assert_eq!(normalize_url("https://www.example.com"), canonical);
+        assert_eq!(normalize_url("www.example.com"), canonical);
+    }
+
+    #[test]
+    fn test_normalize_www_stripping() {
+        assert_eq!(normalize_url("https://www.dhanur.me"), "https://dhanur.me");
+        assert_eq!(normalize_url("www.dhanur.me"), "https://dhanur.me");
+        assert_eq!(normalize_url("https://www.dhanur.me/path"), "https://dhanur.me/path");
+        // www.com edge case: don't strip (remainder has no dot)
+        assert_eq!(normalize_url("https://www.com"), "https://www.com");
     }
 }
