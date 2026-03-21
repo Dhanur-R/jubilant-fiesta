@@ -1,12 +1,12 @@
-<div id="swap-area" class="mt-8 space-y-6">
-  <div class="border-2 border-neutral-800 bg-black p-8">
-    <p class="mb-4 text-[10px] font-bold uppercase tracking-[0.3em] text-neutral-600">
+<div id="swap-area" class="mt-4 space-y-6">
+  <div class="rounded-xl border border-base-content/10 bg-base-200/50 p-6 md:p-8">
+    <p class="mb-4 text-[10px] font-bold uppercase tracking-[0.3em] text-base-content/60">
       YOUR SHORTENED LINK
     </p>
 
-    <div class="mt-4 flex items-center justify-between gap-4 border border-neutral-800 bg-neutral-950 p-4">
+    <div class="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-4 border border-base-content/20 bg-base-100 p-4 rounded-xl shadow-sm">
       <a
-        class="break-all font-mono text-xl font-semibold text-green-400 transition-colors hover:text-green-300"
+        class="break-all font-mono text-lg md:text-xl font-semibold text-primary transition-colors hover:text-primary/80"
         href="{{ short_url }}"
         target="_blank"
         rel="noopener"
@@ -15,7 +15,7 @@
       </a>
 
       <button
-        class="shrink-0 border-2 border-green-500 px-5 py-2.5 text-xs font-bold uppercase text-green-500 transition-all hover:bg-green-500 hover:text-black active:scale-95"
+        class="shrink-0 btn btn-outline btn-sm uppercase font-bold"
         type="button"
         data-copy="{{ short_url }}"
         onclick="copyShortUrl(this)"
@@ -25,15 +25,15 @@
     </div>
 
     <div class="mt-4 flex items-center gap-2 text-xs">
-      <span class="text-neutral-600">CODE:</span>
-      <code class="font-mono font-semibold text-neutral-300">{{ short_code }}</code>
+      <span class="text-base-content/60 font-semibold">CODE:</span>
+      <code class="font-mono font-bold text-base-content">{{ short_code }}</code>
     </div>
   </div>
 
   <a
-    class="inline-flex items-center gap-2 border-b border-transparent text-sm font-medium text-neutral-400 transition hover:border-neutral-400 hover:text-white"
+    class="inline-flex items-center gap-2 text-sm font-medium text-base-content/60 transition hover:text-base-content"
     href="/"
   >
-    ← Shorten another link
+    <i class="fa-solid fa-arrow-left"></i> Shorten another link
   </a>
 </div>
