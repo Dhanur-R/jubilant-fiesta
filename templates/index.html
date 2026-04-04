@@ -2,10 +2,12 @@
 <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight mb-6 mt-14">Linkr</h1>
 <p class="text-lg text-base-content/85 mb-8">Short, fast, and elegant. Paste a URL and hit enter.</p>
 
-<div class="project-card md:max-w-2xl">
-    <div class="project-card-header">
-        <h2 class="project-card-title">Shorten a Link</h2>
+<div class="dui-surface md:max-w-2xl">
+    <div class="dui-surface-body">
+        <div class="dui-surface-header items-start mb-0">
+            <h2 class="dui-surface-title mt-0">Shorten a Link</h2>
+        </div>
+        {% include "partials/form.html" %}
     </div>
-    {% include "partials/form.html" %}
 </div>
 {% endblock %}

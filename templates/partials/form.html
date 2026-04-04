@@ -5,9 +5,9 @@
     hx-target="#swap-area"
     hx-swap="outerHTML"
   >
-    <div class="form-control w-full relative">
+    <div class="dui-input-group relative">
       <input
-        class="input input-bordered w-full bg-base-100 border-base-content/20 focus:border-primary focus:outline-none font-mono text-base"
+        class="dui-input font-mono w-full"
         type="text"
         name="original_url"
         placeholder="example.com/your/really/long/url"
@@ -26,7 +26,7 @@
       <span>{{ error.as_ref().unwrap() }}</span>
     </div>
     {% endif %}
-    <button class="btn btn-primary w-full relative group" type="submit">
+    <button class="dui-btn dui-btn-primary w-full relative group h-12 mt-2" type="submit">
       <span class="htmx-indicator absolute inset-0 flex items-center justify-center">
         <span class="loading loading-spinner loading-md"></span>
       </span>

@@ -1,5 +1,6 @@
 <div id="swap-area" class="mt-4 space-y-6">
-  <div class="rounded-xl border border-base-content/10 bg-base-200/50 p-6 md:p-8">
+  <div class="dui-surface border-0 bg-base-200/50">
+    <div class="dui-surface-body p-6 md:p-8">
     <p class="mb-4 text-[10px] font-bold uppercase tracking-[0.3em] text-base-content/60">
       YOUR SHORTENED LINK
     </p>
@@ -15,7 +16,7 @@
       </a>
 
       <button
-        class="shrink-0 btn btn-outline btn-sm uppercase font-bold"
+        class="shrink-0 dui-btn dui-btn-ghost uppercase h-8 px-3 text-[11px]"
         type="button"
         data-copy="{{ short_url }}"
         onclick="copyShortUrl(this)"
@@ -27,6 +28,7 @@
     <div class="mt-4 flex items-center gap-2 text-xs">
       <span class="text-base-content/60 font-semibold">CODE:</span>
       <code class="font-mono font-bold text-base-content">{{ short_code }}</code>
+    </div>
     </div>
   </div>
 
