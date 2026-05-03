@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: linkr
+    env: rust
+    plan: free
+    buildCommand: cargo build --release
+    startCommand: ./target/release/linkr
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: PUBLIC_BASE_URL
+        value: https://linkr.dhanur.me
+      - key: AUTH_SERVICE_URL
+        value: https://auth.dhanur.me
+      - key: RUST_LOG
+        value: linkr=info,tower_http=info

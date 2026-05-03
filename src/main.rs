@@ -1,3 +1,4 @@
+mod auth;
 mod config;
 mod db;
 mod http_helpers;
@@ -9,6 +10,9 @@ mod validation;
 use axum::{middleware as axum_middleware, routing::{get, post}, Router};
 use std::net::SocketAddr;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use tower_http::cors::{CorsLayer, AllowOrigin};
+use std::time::Duration;
+use axum::http::{header, Method};
 
 use middleware::RateLimiter;
 
@@ -73,6 +77,16 @@ async fn main() -> anyhow::Result<()> {
         config::Config::rate_limit_window(),
     );
 
+    let cors = CorsLayer::new()
+        .allow_origin(AllowOrigin::predicate(|origin, _| {
+            let s = origin.as_bytes();
+            s == b"https://dhanur.me" || s.ends_with(b".dhanur.me")
+        }))
+        .allow_methods([Method::GET, Method::POST, Method::OPTIONS])
+        .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION, header::COOKIE])
+        .allow_credentials(true)
+        .max_age(Duration::from_secs(86400));
+
     let app = Router::new()
         .route("/", get(routes::index))
         .route(
@@ -84,10 +98,15 @@ async fn main() -> anyhow::Result<()> {
         )
         .route("/:code", get(routes::redirect))
         .route("/health", get(routes::health))
+        .route("/.well-known/web-app-origin-association", get(|| async {
+            ([(axum::http::header::CONTENT_TYPE, "application/json")],
+            r#"{"web_apps":[{"manifest":"https://dhanur.me/icons/site.webmanifest","details":{"paths":["/*"]}}]}"#)
+        }))
         .nest_service("/static", tower_http::services::ServeDir::new("static"))
         .with_state(state)
         .layer(tower_http::trace::TraceLayer::new_for_http())
-        .layer(axum_middleware::from_fn(middleware::security_headers));
+        .layer(axum_middleware::from_fn(middleware::security_headers))
+        .layer(cors);
 
     let addr: SocketAddr = format!("0.0.0.0:{}", port).parse()?;
     tracing::info!("listening on {}", addr);

@@ -55,6 +55,41 @@ pub async fn shorten(
         return http_helpers::form_error_response(template, StatusCode::UNPROCESSABLE_ENTITY);
     }
 
+    // Gate URL creation behind authy credits for both guests and authenticated users.
+    let auth_status = crate::auth::fetch_auth_status(&headers).await;
+    tracing::debug!(
+        authenticated = auth_status.authenticated,
+        role = %auth_status.role,
+        "authorizing shorten request"
+    );
+
+    match crate::auth::debit_linkr_credit(&headers, 1).await {
+        Ok(result) => {
+            let allowed = result.success.unwrap_or(false) || result.unlimited.unwrap_or(false);
+            if !allowed {
+                let message = match result.code.as_deref() {
+                    Some("GUEST_DAILY_LIMIT") => "Guest daily limit reached for link creation. Sign in for higher limits.".to_string(),
+                    _ => result
+                        .error
+                        .unwrap_or_else(|| "You do not have enough credits to shorten this link.".to_string()),
+                };
+
+                let template = FormPartialTemplate {
+                    error: Some(message),
+                    value: Some(original_url),
+                };
+                return http_helpers::form_error_response(template, StatusCode::PAYMENT_REQUIRED);
+            }
+        }
+        Err(_) => {
+            let template = FormPartialTemplate {
+                error: Some("Could not validate credits right now. Please try again in a moment.".to_string()),
+                value: Some(original_url),
+            };
+            return http_helpers::form_error_response(template, StatusCode::SERVICE_UNAVAILABLE);
+        }
+    }
+
     let short_code = match create_short_code(&state, &original_url).await {
         Ok(code) => code,
         Err(_) => {
