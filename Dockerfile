@@ -1,5 +1,5 @@
 # Stage 1: Generate CSS
-FROM node:20-slim AS css-builder
+FROM node:26-slim AS css-builder
 WORKDIR /app
 COPY tailwind.config.js ./
 COPY styles ./styles
