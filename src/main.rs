@@ -98,6 +98,9 @@ async fn main() -> anyhow::Result<()> {
         )
         .route("/{code}", get(routes::redirect))
         .route("/health", get(routes::health))
+        .route("/static/js/site-bindings.js", get(|| async {
+            ([(axum::http::header::CONTENT_TYPE, "application/javascript; charset=utf-8")], include_str!("../static/js/site-bindings.js"))
+        }))
         .route("/.well-known/web-app-origin-association", get(|| async {
             ([(axum::http::header::CONTENT_TYPE, "application/json")],
             r#"{"web_apps":[{"manifest":"https://dhanur.me/icons/site.webmanifest","details":{"paths":["/*"]}}]}"#)
