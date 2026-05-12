@@ -85,10 +85,11 @@ pub async fn update_last_accessed(
     let payload = json!({
         "last_accessed": chrono::Utc::now().to_rfc3339()
     });
+    
+    let path = format!("/rest/v1/links?short_code=eq.{}", urlencoding::encode(short_code));
 
     supabase
-        .build_request(reqwest::Method::PATCH, "/rest/v1/links")
-        .query(&[("short_code", "eq.".to_string() + short_code)])
+        .build_request(reqwest::Method::PATCH, &path)
         .header("Content-Type", "application/json")
         .json(&payload)
         .send()

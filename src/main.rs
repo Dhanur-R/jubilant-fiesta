@@ -96,7 +96,7 @@ async fn main() -> anyhow::Result<()> {
                 async move { limiter.middleware(req, next).await }
             })),
         )
-        .route("/:code", get(routes::redirect))
+        .route("/{code}", get(routes::redirect))
         .route("/health", get(routes::health))
         .route("/.well-known/web-app-origin-association", get(|| async {
             ([(axum::http::header::CONTENT_TYPE, "application/json")],
