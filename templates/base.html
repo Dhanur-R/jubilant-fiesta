@@ -53,11 +53,7 @@
       })();
     </script>
 
-    <!-- Required for FontAwesome Icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
+    <!-- FontAwesome will be injected by shell.min.js (avoid external CDN because of CSP) -->
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
 
     <!-- HTMX Indicator Styles -->
@@ -94,6 +90,9 @@
         favicon: false,
       };
     </script>
+
+    <!-- Local bindings for CSP-safe inline actions -->
+    <script src="/static/js/site-bindings.js"></script>
 
     <!-- 2. The Abyssal Integration Script -->
     <script src="https://dhanur.me/js/shell.min.js"></script>
