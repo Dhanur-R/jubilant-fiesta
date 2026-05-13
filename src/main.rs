@@ -13,6 +13,7 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use tower_http::cors::{CorsLayer, AllowOrigin};
 use std::time::Duration;
 use axum::http::{header, Method};
+use axum::response::Response;
 
 use middleware::RateLimiter;
 

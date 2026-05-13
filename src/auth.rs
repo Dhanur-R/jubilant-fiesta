@@ -4,11 +4,40 @@ use serde::{Deserialize, Serialize};
 
 const DEFAULT_AUTH_SERVICE: &str = "https://auth.dhanur.me";
 
-// ... structs remain the same ...
+#[derive(Clone, Debug, Deserialize)]
+pub struct AuthStatus {
+    pub authenticated: bool,
+    pub role: String,
+}
+
+impl Default for AuthStatus {
+    fn default() -> Self {
+        Self {
+            authenticated: false,
+            role: "guest".to_string(),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct CreditUseResult {
+    pub success: Option<bool>,
+    pub balance: Option<i64>,
+    pub error: Option<String>,
+    pub code: Option<String>,
+    pub limit: Option<i64>,
+    pub unlimited: Option<bool>,
+}
+
+fn auth_service_base_url() -> String {
+    std::env::var("AUTH_SERVICE_URL")
+        .unwrap_or_else(|_| DEFAULT_AUTH_SERVICE.to_string())
+        .trim_end_matches('/')
+        .to_string()
+}
 
 fn with_forward_headers(builder: reqwest::RequestBuilder, headers: &HeaderMap) -> reqwest::RequestBuilder {
     let mut req = builder
-        // Apply a standard User-Agent to bypass default Cloudflare bot mitigation blocks against reqwest
         .header(USER_AGENT, "Mozilla/5.0 (compatible; LinkrBackend/1.0)");
 
     if let Some(cookie) = headers.get("cookie").and_then(|value| value.to_str().ok()) {
