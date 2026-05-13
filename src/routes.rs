@@ -168,22 +168,32 @@ fn derive_base_url(headers: &HeaderMap) -> Option<String> {
     Some(format!("{}://{}", proto, host))
 }
 
+// In routes.rs
 async fn create_short_code(
     state: &AppState,
     original_url: &str,
 ) -> Result<String, anyhow::Error> {
-    // Check if URL already exists and reuse the code
     if let Ok(Some(existing_code)) = db::get_link_by_original_url(&state.supabase, original_url).await {
         return Ok(existing_code);
     }
 
-    // Create new short code if URL doesn't exist
-    for _ in 0..Config::SHORT_CODE_RETRY_ATTEMPTS {
-        let candidate = nanoid!(6); // Using literal as nanoid! macro requires it
-        if db::insert_link(&state.supabase, original_url, &candidate).await? {
-            return Ok(candidate);
+    for attempt in 1..=Config::SHORT_CODE_RETRY_ATTEMPTS {
+        let candidate = nanoid!(6);
+        match db::insert_link(&state.supabase, original_url, &candidate).await {
+            Ok(true) => return Ok(candidate),
+            Ok(false) => {
+                // Short-code collision occurred (409), loop continues to try next ID
+                tracing::warn!("short_code collision on attempt {}, retrying", attempt);
+                continue;
+            }
+            Err(e) => {
+                // Log underlying Supabase/Reqwest transport errors for diagnostic visibility
+                tracing::error!("Supabase execution failure during short_code generation: {:#}", e);
+                return Err(e);
+            }
         }
     }
+
     Err(anyhow::anyhow!(
         "Failed to create unique short code after {} attempts",
         Config::SHORT_CODE_RETRY_ATTEMPTS

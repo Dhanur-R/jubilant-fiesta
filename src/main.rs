@@ -98,13 +98,12 @@ async fn main() -> anyhow::Result<()> {
         )
         .route("/{code}", get(routes::redirect))
         .route("/health", get(routes::health))
-        .route("/static/js/site-bindings.js", get(|| async {
-            ([(axum::http::header::CONTENT_TYPE, "application/javascript; charset=utf-8")], include_str!("../static/js/site-bindings.js"))
-        }))
+        // REMOVED: Explicit .route("/static/js/site-bindings.js", ...)
         .route("/.well-known/web-app-origin-association", get(|| async {
             ([(axum::http::header::CONTENT_TYPE, "application/json")],
             r#"{"web_apps":[{"manifest":"https://dhanur.me/icons/site.webmanifest","details":{"paths":["/*"]}}]}"#)
         }))
+        // ServeDir will cleanly handle /static/js/site-bindings.js with correct MIME types
         .nest_service("/static", tower_http::services::ServeDir::new("static"))
         .with_state(state)
         .layer(tower_http::trace::TraceLayer::new_for_http())

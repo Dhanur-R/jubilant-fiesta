@@ -12,8 +12,14 @@ pub struct SupabaseClient {
 
 impl SupabaseClient {
     pub fn new(base_url: String, api_key: String) -> Self {
+        // Enforce a strict 5-second timeout on all outbound Supabase REST calls
+        let client = Client::builder()
+            .timeout(std::time::Duration::from_secs(5))
+            .build()
+            .unwrap_or_else(|_| Client::new());
+
         Self {
-            client: Client::new(),
+            client,
             base_url,
             api_key,
         }
@@ -62,20 +68,34 @@ pub async fn insert_link(
     let response = supabase
         .build_request(reqwest::Method::POST, "/rest/v1/links")
         .header("Content-Type", "application/json")
+        // Instruct PostgREST to return the representation so we can read error payloads
+        .header("Prefer", "return=representation")
         .json(&payload)
         .send()
         .await?;
 
     let status = response.status();
+    
+    // Explicit 201 Created check
     if status.as_u16() == 201 {
         return Ok(true);
     }
-    if status.as_u16() == 409 {
-        return Ok(false); // short_code collision, caller should retry
+
+    // Inspect non-success payloads to safely intercept unique constraint violations
+    let body_text = response.text().await.unwrap_or_default();
+    
+    if let Ok(error_json) = serde_json::from_str::<serde_json::Value>(&body_text) {
+        // PostgREST unique violations return a payload containing `"code": "23505"`
+        if let Some(code) = error_json.get("code").and_then(|c| c.as_str()) {
+            if code == "23505" {
+                tracing::debug!("Supabase unique constraint violation (23505) detected for code: {}", short_code);
+                return Ok(false); // Signal collision; caller should retry loop
+            }
+        }
     }
 
-    let body = response.text().await.unwrap_or_default();
-    Err(anyhow::anyhow!("Supabase insert failed ({}): {}", status, body))
+    // Any other uncaught Postgres/Network error should legitimately halt execution
+    Err(anyhow::anyhow!("Supabase insert failed ({}): {}", status, body_text))
 }
 
 pub async fn update_last_accessed(

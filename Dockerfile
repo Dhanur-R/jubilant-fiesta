@@ -19,6 +19,7 @@ RUN rm -rf src
 # Build the actual application
 COPY src ./src
 COPY templates ./templates
+COPY static ./static
 RUN touch src/main.rs && cargo build --release
 
 # Stage 3: Runtime
