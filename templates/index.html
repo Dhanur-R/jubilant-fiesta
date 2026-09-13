@@ -1,13 +1,17 @@
 {% extends "base.html" %} {% block content %}
-<h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight mb-6 mt-14">Linkr</h1>
-<p class="text-lg text-base-content/85 mb-8">Short, fast, and elegant. Paste a URL and hit enter.</p>
-
-<div class="dui-surface md:max-w-2xl">
-    <div class="dui-surface-body">
-        <div class="dui-surface-header items-start mb-0">
-            <h2 class="dui-surface-title mt-0">Shorten a Link</h2>
-        </div>
-        {% include "partials/form.html" %}
+<div class="mb-8 text-center sm:text-left">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-primary/10 text-primary border border-primary/20 mb-3">
+        <i class="fa-solid fa-link"></i> URL Shortener
     </div>
+    <h1 class="text-3xl sm:text-4xl font-black tracking-tight mb-2">Linkr</h1>
+    <p class="text-base text-base-content/70">Short, fast, and elegant. Paste a URL and hit enter.</p>
+</div>
+
+<div class="eco-card">
+    <div class="flex items-center justify-between mb-4 pb-3 border-b border-base-content/10">
+        <h2 class="text-lg font-bold text-base-content m-0">Shorten a Link</h2>
+        <span class="text-xs text-base-content/40 font-mono">SQLite-backed</span>
+    </div>
+    {% include "partials/form.html" %}
 </div>
 {% endblock %}
